@@ -67,7 +67,14 @@ echo "==> namespace $NS"
 kubectl create namespace "$NS" --dry-run=client -o yaml | kubectl apply -f -
 
 echo "==> PVC"
-kubectl apply -n "$NS" -f "$TEMPLATES_DIR/cloudmapper-pvc.yaml"
+# A PVC's spec is immutable once it's bound, so re-applying a (possibly differing)
+# manifest over an existing one fails. Create it only when it's missing; otherwise
+# leave whatever the cluster already has in place.
+if kubectl get pvc cloudmapper-pvc -n "$NS" >/dev/null 2>&1; then
+  echo "    cloudmapper-pvc already exists — leaving it as-is"
+else
+  kubectl apply -n "$NS" -f "$TEMPLATES_DIR/cloudmapper-pvc.yaml"
+fi
 
 echo "==> secrets (idempotent upsert; values come from env/files, not the file)"
 # Pass the AWS values via stdin (env-file), NOT --from-literal, so they never
