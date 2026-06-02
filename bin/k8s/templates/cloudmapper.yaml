@@ -2,7 +2,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: cloudmapper
-  namespace: texera
 spec:
   replicas: 1
   # ReadWriteOnce PVC: replace the pod (kill-then-create) so the new pod isn't
@@ -80,7 +79,6 @@ apiVersion: v1
 kind: Service
 metadata:
   name: cloudmapper-service
-  namespace: texera
 spec:
   selector:
     app: cloudmapper
