@@ -5,6 +5,10 @@ metadata:
   namespace: texera
 spec:
   replicas: 1
+  # ReadWriteOnce PVC: replace the pod (kill-then-create) so the new pod isn't
+  # blocked trying to attach the volume the old pod still holds (Multi-Attach).
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: cloudmapper
@@ -35,7 +39,7 @@ spec:
               echo "aws_access_key_id = $AWS_ACCESS_KEY_ID" >> /aws-config/credentials;
               echo "aws_secret_access_key = $AWS_SECRET_ACCESS_KEY" >> /aws-config/credentials;
               echo "[default]" > /aws-config/config;
-              echo "region = us-west-2" >> /aws-config/config;
+              echo "region = ${AWS_DEFAULT_REGION:-us-west-1}" >> /aws-config/config;
           env:
             - name: AWS_ACCESS_KEY_ID
               valueFrom:
@@ -47,6 +51,12 @@ spec:
                 secretKeyRef:
                   name: aws-secret
                   key: AWS_SECRET_ACCESS_KEY
+            - name: AWS_DEFAULT_REGION       # optional; defaults to us-west-1 if absent
+              valueFrom:
+                secretKeyRef:
+                  name: aws-secret
+                  key: AWS_DEFAULT_REGION
+                  optional: true
           volumeMounts:
             - name: aws-config-volume
               mountPath: /aws-config
