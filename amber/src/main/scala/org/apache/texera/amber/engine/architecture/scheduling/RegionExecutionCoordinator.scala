@@ -25,46 +25,17 @@ import org.apache.texera.amber.core.storage.DocumentFactory
 import org.apache.texera.amber.core.storage.VFSURIFactory.decodeURI
 import org.apache.texera.amber.core.virtualidentity.ActorVirtualIdentity
 import org.apache.texera.amber.core.workflow.{GlobalPortIdentity, PhysicalLink, PhysicalOp}
-import org.apache.texera.amber.engine.architecture.common.{
-  AkkaActorRefMappingService,
-  AkkaActorService,
-  ExecutorDeployment
-}
-import org.apache.texera.amber.engine.architecture.controller.execution.{
-  OperatorExecution,
-  RegionExecution,
-  WorkflowExecution
-}
-import org.apache.texera.amber.engine.architecture.controller.{
-  ControllerConfig,
-  ExecutionStateUpdate,
-  ExecutionStatsUpdate,
-  WorkerAssignmentUpdate
-}
+import org.apache.texera.amber.engine.architecture.common.{AkkaActorRefMappingService, AkkaActorService, ExecutorDeployment}
+import org.apache.texera.amber.engine.architecture.controller.execution.{OperatorExecution, RegionExecution, WorkflowExecution}
+import org.apache.texera.amber.engine.architecture.controller.{ControllerConfig, ExecutionStateUpdate, ExecutionStatsUpdate, RuntimeStatisticsPersist, WorkerAssignmentUpdate}
 import org.apache.texera.amber.engine.architecture.rpc.controlcommands._
-import org.apache.texera.amber.engine.architecture.rpc.controlreturns.{
-  EmptyReturn,
-  WorkflowAggregatedState
-}
-import org.apache.texera.amber.engine.architecture.scheduling.config.{
-  InputPortConfig,
-  OperatorConfig,
-  OutputPortConfig,
-  PortConfig,
-  ResourceConfig
-}
+import org.apache.texera.amber.engine.architecture.rpc.controlreturns.{EmptyReturn, WorkflowAggregatedState}
+import org.apache.texera.amber.engine.architecture.scheduling.config.{InputPortConfig, OperatorConfig, OutputPortConfig, PortConfig, ResourceConfig}
 import org.apache.texera.amber.engine.architecture.sendsemantics.partitionings.Partitioning
-import org.apache.texera.amber.engine.architecture.worker.statistics.{
-  PortTupleMetricsMapping,
-  TupleMetrics,
-  WorkerState
-}
+import org.apache.texera.amber.engine.architecture.worker.statistics.{PortTupleMetricsMapping, TupleMetrics, WorkerState}
 import org.apache.texera.amber.engine.common.AmberLogging
 import org.apache.texera.amber.engine.common.FutureBijection._
-import org.apache.texera.amber.engine.common.executionruntimestate.{
-  OperatorMetrics,
-  OperatorStatistics
-}
+import org.apache.texera.amber.engine.common.executionruntimestate.{OperatorMetrics, OperatorStatistics}
 import org.apache.texera.amber.engine.common.rpc.AsyncRPCClient
 import org.apache.texera.amber.engine.common.virtualidentity.util.CONTROLLER
 import org.apache.texera.web.SessionState
@@ -596,20 +567,12 @@ class RegionExecutionCoordinator(
       region: Region,
       isDependeePhase: Boolean
   ): Future[Seq[Unit]] = {
-<<<<<<< HEAD:amber/src/main/scala/org/apache/texera/amber/engine/architecture/scheduling/RegionExecutionCoordinator.scala
-    val stats = workflowExecution.getAllRegionExecutionsStats
-    asyncRPCClient.sendToClient(ExecutionStatsUpdate(stats))
-    asyncRPCClient.sendToClient(RuntimeStatisticsPersist(stats))
-=======
     if (region.cached) {
       return Future.value(Seq.empty)
     }
-    asyncRPCClient.sendToClient(
-      ExecutionStatsUpdate(
-        workflowExecution.getAllRegionExecutionsStats
-      )
-    )
->>>>>>> 241b98c20 (feat(cache): reuse cached URIs in scheduler and short-circuit cached regions during execution):amber/src/main/scala/org/apache/amber/engine/architecture/scheduling/RegionExecutionCoordinator.scala
+    val stats = workflowExecution.getAllRegionExecutionsStats
+    asyncRPCClient.sendToClient(ExecutionStatsUpdate(stats))
+    asyncRPCClient.sendToClient(RuntimeStatisticsPersist(stats))
     val allStarterOperators = region.getStarterOperators
     val starterOpsForThisPhase =
       if (isDependeePhase) allStarterOperators.filter(_.dependeeInputs.nonEmpty)

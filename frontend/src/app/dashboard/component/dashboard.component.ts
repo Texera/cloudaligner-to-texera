@@ -19,6 +19,7 @@
 
 import { ChangeDetectorRef, Component, NgZone, OnInit, ViewChild } from "@angular/core";
 import { UserService } from "../../common/service/user/user.service";
+import { User } from "../../common/type/user";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { FlarumService } from "../service/user/flarum/flarum.service";
 import { HttpErrorResponse } from "@angular/common/http";
@@ -121,7 +122,7 @@ export class DashboardComponent implements OnInit {
     this.userService
       .userChanged()
       .pipe(untilDestroyed(this))
-      .subscribe(() => {
+      .subscribe(user => {
         this.ngZone.run(() => {
           this.isLogin = this.userService.isLogin();
           this.isAdmin = this.userService.isAdmin();

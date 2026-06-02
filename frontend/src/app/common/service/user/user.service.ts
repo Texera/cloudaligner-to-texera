@@ -18,7 +18,9 @@
  */
 
 import { Injectable } from "@angular/core";
+import { HttpClient } from "@angular/common/http";
 import { Observable, of, ReplaySubject } from "rxjs";
+import { AppSettings } from "../../app-setting";
 import { Role, User } from "../../type/user";
 import { AuthService } from "./auth.service";
 import { GuiConfigService } from "../gui-config.service";
@@ -38,6 +40,7 @@ export class UserService {
   private readonly cacheDuration = 3600 * 1000; // cache duration: 1h
 
   constructor(
+    private http: HttpClient,
     private authService: AuthService,
     private config: GuiConfigService
   ) {

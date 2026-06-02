@@ -20,6 +20,7 @@
 package org.apache.texera.amber.core.workflow
 
 import org.apache.texera.amber.core.virtualidentity.ExecutionIdentity
+import org.apache.texera.config.GuiConfig
 
 import java.net.URI
 
@@ -32,6 +33,8 @@ case class CachedOutput(
 
 case class WorkflowSettings(
     dataTransferBatchSize: Int = 400,
+    executionMode: ExecutionMode =
+      ExecutionMode.valueOf(GuiConfig.guiWorkflowWorkspaceDefaultExecutionMode),
     outputPortsNeedingStorage: Set[GlobalPortIdentity] = Set.empty,
     // serialized GlobalPortIdentity -> cached output
     cachedOutputs: Map[String, CachedOutput] = Map.empty

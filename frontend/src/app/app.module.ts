@@ -107,7 +107,6 @@ import { AgentChatComponent } from "./workspace/component/agent-panel/agent-chat
 import { AgentRegistrationComponent } from "./workspace/component/agent-panel/agent-registration/agent-registration.component";
 import { ReActStepDetailModalComponent } from "./workspace/component/agent-panel/react-step-detail-modal/react-step-detail-modal.component";
 import { ReActStepListComponent } from "./workspace/component/agent-panel/react-step-list/react-step-list.component";
-import { InputAutoCompleteComponent } from "./workspace/component/input-autocomplete/input-autocomplete.component";
 import { DirectoryPathInputComponent } from "./workspace/component/directory-path-input/directory-path-input.component";
 import { DatasetFileSelectorComponent } from "./workspace/component/dataset-file-selector/dataset-file-selector.component";
 import { DatasetVersionSelectorComponent } from "./workspace/component/dataset-version-selector/dataset-version-selector.component";
@@ -196,7 +195,6 @@ import { ChatAssistantMultiAgentComponent } from "./workspace/component/left-pan
 import { FormlyRepeatDndComponent } from "./common/formly/repeat-dnd/repeat-dnd.component";
 import { NzInputNumberModule } from "ng-zorro-antd/input-number";
 import { NzCheckboxModule } from "ng-zorro-antd/checkbox";
-import { NzRadioModule } from "ng-zorro-antd/radio";
 import { RegistrationRequestModalComponent } from "./common/service/user/registration-request-modal/registration-request-modal.component";
 import { UserComputingUnitComponent } from "./dashboard/component/user/user-computing-unit/user-computing-unit.component";
 import { UserComputingUnitListItemComponent } from "./dashboard/component/user/user-computing-unit/user-computing-unit-list-item/user-computing-unit-list-item.component";
@@ -272,7 +270,6 @@ registerLocaleData(en);
     AgentRegistrationComponent,
     ReActStepDetailModalComponent,
     ReActStepListComponent,
-    InputAutoCompleteComponent,
     DirectoryPathInputComponent,
     DirectorySelectionComponent,
     DatasetFileSelectorComponent,

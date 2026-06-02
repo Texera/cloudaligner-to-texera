@@ -48,7 +48,7 @@ export class GmailService {
       });
   }
 
-  public notifyUnauthorizedLogin(userEmail: string, affiliation: string, reason: string): void {
+  public notifyUnauthorizedLogin(userEmail: string, affiliation: string = "", reason: string = ""): void {
     this.http
       .post(`${AppSettings.getApiEndpoint()}/gmail/notify-unauthorized`, { receiver: userEmail, affiliation, reason })
       .subscribe({

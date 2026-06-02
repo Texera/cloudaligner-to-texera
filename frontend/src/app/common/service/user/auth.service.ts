@@ -19,7 +19,7 @@
 
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { Observable, Subscription, timer } from "rxjs";
+import { Observable, Subscription, timer, firstValueFrom } from "rxjs";
 import { AppSettings } from "../../app-setting";
 import { Role, User } from "../../type/user";
 import { ignoreElements } from "rxjs/operators";
@@ -28,6 +28,7 @@ import { NotificationService } from "../notification/notification.service";
 import { GmailService } from "../gmail/gmail.service";
 import { GuiConfigService } from "../gui-config.service";
 import { NzModalService } from "ng-zorro-antd/modal";
+import { RegistrationRequestModalComponent } from "./registration-request-modal/registration-request-modal.component";
 
 export const TOKEN_KEY = "access_token";
 
