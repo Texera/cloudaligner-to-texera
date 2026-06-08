@@ -29,6 +29,7 @@ import { DatasetFileSelectorComponent } from "../../workspace/component/dataset-
 import { CollabWrapperComponent } from "./collab-wrapper/collab-wrapper/collab-wrapper.component";
 import { ClusterAutoCompleteComponent } from "src/app/workspace/component/cluster-autocomplete/cluster-autocomplete.component";
 import { FormlyRepeatDndComponent } from "./repeat-dnd/repeat-dnd.component";
+import { UiUdfParametersComponent } from "../../workspace/component/ui-udf-parameters/ui-udf-parameters.component";
 import { DatasetVersionSelectorComponent } from "../../workspace/component/dataset-version-selector/dataset-version-selector.component";
 
 /**
@@ -84,6 +85,7 @@ export const TEXERA_FORMLY_CONFIG = {
     { name: "inputautocomplete", component: DatasetFileSelectorComponent, wrappers: ["form-field"] },
     { name: "datasetversionselector", component: DatasetVersionSelectorComponent, wrappers: ["form-field"] },
     { name: "repeat-section-dnd", component: FormlyRepeatDndComponent },
+    { name: "ui-udf-parameters", component: UiUdfParametersComponent, wrappers: ["form-field"] },
   ],
   wrappers: [
     { name: "preset-wrapper", component: PresetWrapperComponent },

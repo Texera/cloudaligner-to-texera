@@ -34,16 +34,20 @@ sealed trait PortConfig {
 /**
   * Output port configuration for scheduling/runtime.
   *
-  * @param storageURI URI bound at planning time for this output port.
+  * An output port requires exactly one materialization base URI (`storageURIBase`).
+  * Result and state URIs hang off it via `VFSURIFactory.resultURI` / `stateURI`;
+  * this field is *not* a URI you can pass straight to `DocumentFactory`.
+  *
+  * @param storageURIBase Base URI bound at planning time for this output port.
   * @param cachedTupleCount Optional cached tuple count for UI/metrics when serving from cache.
   * @param materialize When false, this output is reuse-only (cache-hit) and must not be freshly materialized.
   */
 final case class OutputPortConfig(
-    storageURI: URI,
+    storageURIBase: URI,
     cachedTupleCount: Option[Long] = None,
     materialize: Boolean = true
 ) extends PortConfig {
-  override val storageURIs: List[URI] = List(storageURI)
+  override val storageURIs: List[URI] = List(storageURIBase)
 }
 
 /**

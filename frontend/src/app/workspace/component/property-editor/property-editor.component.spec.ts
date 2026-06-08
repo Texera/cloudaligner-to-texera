@@ -17,7 +17,8 @@
  * under the License.
  */
 
-import { ComponentFixture, TestBed, waitForAsync } from "@angular/core/testing";
+import { CommonModule } from "@angular/common";
+import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { PropertyEditorComponent } from "./property-editor.component";
 import {
   mockPoint,
@@ -38,9 +39,9 @@ describe("PropertyEditorComponent", () => {
   let fixture: ComponentFixture<PropertyEditorComponent>;
   let workflowActionService: WorkflowActionService;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [PropertyEditorComponent, CommonModule, HttpClientTestingModule],
       providers: [
         {
           provide: OperatorMetadataService,
@@ -50,7 +51,7 @@ describe("PropertyEditorComponent", () => {
         ...commonTestProviders,
       ],
     }).compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(PropertyEditorComponent);

@@ -20,7 +20,7 @@
 package org.apache.texera.amber.engine.architecture.scheduling
 
 import org.apache.texera.amber.config.ApplicationConfig
-import org.apache.texera.amber.core.storage.VFSURIFactory.createResultURI
+import org.apache.texera.amber.core.storage.VFSURIFactory.createPortBaseURI
 import org.apache.texera.amber.core.virtualidentity.{ActorVirtualIdentity, PhysicalOpIdentity}
 import org.apache.texera.amber.core.workflow._
 import org.apache.texera.amber.engine.architecture.scheduling.SchedulingUtils.replaceVertex
@@ -227,7 +227,7 @@ class CostBasedScheduleGenerator(
             val outputConfig = planningHints.outputPortConfigOverrides.getOrElse(
               gpid,
               OutputPortConfig(
-                createResultURI(
+                createPortBaseURI(
                   workflowId = workflowContext.workflowId,
                   executionId = workflowContext.executionId,
                   globalPortId = gpid
@@ -292,7 +292,7 @@ class CostBasedScheduleGenerator(
                     s"the outout port $globalOutputPortId has not been assigned a URI yet."
                 )
               )
-              .storageURI
+              .storageURIBase
 
             // Group all available URIs of this input port together
             acc.updated(

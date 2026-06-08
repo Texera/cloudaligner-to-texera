@@ -136,7 +136,6 @@ export const operatorNameClass = "texera-operator-name";
 export const operatorFriendlyNameClass = "texera-operator-friendly-name";
 export const operatorPortMetricsClass = "texera-operator-port-metrics";
 const operatorWorkerCountClass = "operator-worker-count";
-const operatorStatusTextClass = "operator-status";
 
 export const linkPathStrokeColor = "#919191";
 
@@ -155,7 +154,6 @@ class TexeraCustomJointElement extends joint.shapes.devs.Model {
       <text class="${operatorNameClass}"></text>
       <text class="${operatorPortMetricsClass}"></text>
       <text class="${operatorWorkerCountClass}"></text>
-      <text class="${operatorStatusTextClass}"></text>
       <text class="${operatorStateClass}"></text>
       <text class="${operatorReuseCacheTextClass}"></text>
       <text class="${operatorCoeditorEditingClass}"></text>
@@ -212,6 +210,56 @@ export class JointUIService {
   public static readonly DEFAULT_GROUP_MARGIN_BOTTOM = 40;
   public static readonly DEFAULT_COMMENT_WIDTH = 32;
   public static readonly DEFAULT_COMMENT_HEIGHT = 32;
+  public static readonly MAX_OPERATOR_NAME_PIXELS = 200;
+  private static readonly OPERATOR_NAME_FONT = "14px sans-serif";
+  private static measureCtx: CanvasRenderingContext2D | null = null;
+
+  private static getMeasureContext(): CanvasRenderingContext2D | null {
+    if (JointUIService.measureCtx) return JointUIService.measureCtx;
+    const ctx = document.createElement("canvas").getContext("2d");
+    if (!ctx) return null;
+    ctx.font = JointUIService.OPERATOR_NAME_FONT;
+    JointUIService.measureCtx = ctx;
+    return ctx;
+  }
+
+  public static measureOperatorNameWidth(text: string): number {
+    const ctx = JointUIService.getMeasureContext();
+    if (ctx) return ctx.measureText(text).width;
+    // Fallback for jsdom-without-canvas: approximate at ~14px sans-serif.
+    return text.length * 7;
+  }
+
+  // Split a string into grapheme clusters so truncation does not break
+  // surrogate pairs (emoji) or ZWJ sequences (e.g. family emoji, flags).
+  // Falls back to code-point iteration if Intl.Segmenter is unavailable.
+  private static splitGraphemes(name: string): string[] {
+    if (typeof Intl.Segmenter === "function") {
+      return Array.from(new Intl.Segmenter().segment(name), s => s.segment);
+    }
+    return Array.from(name);
+  }
+
+  public static truncateOperatorDisplayName(
+    name: string,
+    measure: (text: string) => number = JointUIService.measureOperatorNameWidth
+  ): string {
+    if (!name) return name;
+    const budget = JointUIService.MAX_OPERATOR_NAME_PIXELS;
+    if (measure(name) <= budget) return name;
+    const ellipsis = "…";
+    const prefixBudget = budget - measure(ellipsis);
+    const graphemes = JointUIService.splitGraphemes(name);
+    // Binary-search the longest grapheme prefix that fits inside prefixBudget.
+    let lo = 0;
+    let hi = graphemes.length;
+    while (lo < hi) {
+      const mid = (lo + hi + 1) >>> 1;
+      if (measure(graphemes.slice(0, mid).join("")) <= prefixBudget) lo = mid;
+      else hi = mid - 1;
+    }
+    return graphemes.slice(0, lo).join("") + ellipsis;
+  }
 
   private operatorSchemas: ReadonlyArray<OperatorSchema> = [];
 
@@ -256,7 +304,9 @@ export class JointUIService {
       portLabelMarkup: JointUIService.getCustomPortLabelMarkup(),
       attrs: JointUIService.getCustomOperatorStyleAttrs(
         operator,
-        operator.customDisplayName ?? operatorSchema.additionalMetadata.userFriendlyName,
+        JointUIService.truncateOperatorDisplayName(
+          operator.customDisplayName ?? operatorSchema.additionalMetadata.userFriendlyName
+        ),
         operatorSchema.operatorType,
         operatorSchema.additionalMetadata.userFriendlyName
       ),
@@ -367,11 +417,6 @@ export class JointUIService {
     const workerCount = statistics.numWorkers ?? 1;
     const workerCountLabel = isSkippedFromCache ? "from cache" : "#workers: " + String(workerCount);
     element.attr(`.${operatorWorkerCountClass}/text`, workerCountLabel);
-
-    element.attr(
-      `.${operatorStatusTextClass}/text`,
-      "status: " + JointUIService.getStatusDisplayText(statistics.operatorState)
-    );
 
     inPorts.forEach(portDef => {
       const portId = portDef.id;
@@ -495,11 +540,6 @@ export class JointUIService {
       ".remove-input-port-button": { visibility: "visible" },
       ".remove-output-port-button": { visibility: "visible" },
     });
-
-    const element = jointPaper.getModelById(operatorID) as joint.shapes.devs.Model;
-    if (!element) {
-      return;
-    }
   }
 
   public changeOperatorState(jointPaper: joint.dia.Paper, operatorID: string, operatorState: OperatorState): void {
@@ -526,12 +566,10 @@ export class JointUIService {
         break;
     }
     jointPaper.getModelById(operatorID).attr({
-      [`.${operatorStateClass}`]: { text: operatorState.toString() },
-      [`.${operatorStateClass}`]: { fill: fillColor },
+      [`.${operatorStateClass}`]: { text: operatorState.toString(), fill: fillColor },
       "rect.body": { stroke: fillColor },
       [`.${operatorPortMetricsClass}`]: { fill: fillColor },
       [`.${operatorWorkerCountClass}`]: { fill: fillColor },
-      [`.${operatorStatusTextClass}`]: { fill: fillColor },
     });
     const element = jointPaper.getModelById(operatorID) as joint.shapes.devs.Model;
     const allPorts = element.getPorts();
@@ -600,7 +638,9 @@ export class JointUIService {
     jointPaper: joint.dia.Paper,
     displayName: string
   ): void {
-    jointPaper.getModelById(operator.operatorID).attr(`.${operatorNameClass}/text`, displayName);
+    jointPaper
+      .getModelById(operator.operatorID)
+      .attr(`.${operatorNameClass}/text`, JointUIService.truncateOperatorDisplayName(displayName));
   }
 
   public getCommentElement(commentBox: CommentBox): joint.dia.Element {
@@ -999,10 +1039,6 @@ export class JointUIService {
         "ref-x": -5,
         "ref-y": -35,
       },
-      [`.${operatorStatusTextClass}`]: {
-        "ref-x": -10,
-        "ref-y": -35,
-      },
       ".delete-button": {
         x: 60,
         y: -20,
@@ -1174,13 +1210,6 @@ export class JointUIService {
       stroke: coeditor.color,
     });
     return userCursor;
-  }
-
-  private static getStatusDisplayText(state: OperatorState): string {
-    if (state === OperatorState.Uninitialized) {
-      return "Waiting";
-    }
-    return String(state);
   }
 
   public static getJointUserPointerName(coeditor: Coeditor) {

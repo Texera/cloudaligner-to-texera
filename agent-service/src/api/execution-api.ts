@@ -17,15 +17,6 @@
  * under the License.
  */
 
-/**
- * Execution API types for Texera Agent Service.
- * These types match the backend SyncExecutionResource request/response.
- */
-
-// ============================================================================
-// Types matching the backend SyncExecutionResource
-// ============================================================================
-
 export interface LogicalLink {
   fromOpId: string;
   fromPortId: { id: number; internal: boolean };
@@ -33,7 +24,7 @@ export interface LogicalLink {
   toPortId: { id: number; internal: boolean };
 }
 
-export interface LogicalOperator {
+interface LogicalOperator {
   operatorID: string;
   operatorType: string;
   [key: string]: any;
@@ -44,24 +35,4 @@ export interface LogicalPlan {
   links: LogicalLink[];
   opsToViewResult?: string[];
   opsToReuseResult?: string[];
-}
-
-export interface WorkflowSettings {
-  dataTransferBatchSize?: number;
-  outputPortsNeedingStorage?: string[];
-}
-
-/** Request body for the sync execution API */
-export interface SyncExecutionRequest {
-  executionName: string;
-  logicalPlan: {
-    operators: LogicalOperator[];
-    links: LogicalLink[];
-    opsToViewResult?: string[];
-    opsToReuseResult?: string[];
-  };
-  workflowSettings?: WorkflowSettings;
-  targetOperatorIds: string[];
-  timeoutSeconds?: number;
-  maxResultRows?: number;
 }

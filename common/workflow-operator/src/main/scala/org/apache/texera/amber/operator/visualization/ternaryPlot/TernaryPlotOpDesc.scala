@@ -82,7 +82,6 @@ class TernaryPlotOpDesc extends PythonOperatorDescriptor {
     val outputSchema = Schema()
       .add("html-content", AttributeType.STRING)
     Map(operatorInfo.outputPorts.head.id -> outputSchema)
-    Map(operatorInfo.outputPorts.head.id -> outputSchema)
   }
 
   /** Returns a Python string that drops any tuples with missing values */
@@ -98,7 +97,7 @@ class TernaryPlotOpDesc extends PythonOperatorDescriptor {
   /** Returns a Python string that creates the ternary plot figure */
   def createPlotlyFigure(): PythonTemplateBuilder = {
     pyb"""
-       |        if $colorEnabled == 'true' and $colorDataField != "":
+       |        if '$colorEnabled' == 'true' and $colorDataField != "":
        |            fig = px.scatter_ternary(table, a=$firstVariable, b=$secondVariable, c=$thirdVariable, color=$colorDataField)
        |        else:
        |            fig = px.scatter_ternary(table, a=$firstVariable, b=$secondVariable, c=$thirdVariable)

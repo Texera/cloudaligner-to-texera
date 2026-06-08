@@ -626,7 +626,7 @@ export class WorkflowActionService {
   public reloadWorkflow(
     workflow: Readonly<Workflow> | undefined,
     asyncRendering = this.config.env.asyncRenderingEnabled,
-    preserveViewport = false
+    restoreViewport = true
   ): void {
     this.jointGraphWrapper.setReloadingWorkflow(true);
     this.jointGraphWrapper.jointGraphContext.withContext({ async: asyncRendering }, () => {
@@ -670,8 +670,8 @@ export class WorkflowActionService {
 
       this.addOperatorsAndLinks(operatorsAndPositions, links, commentBoxes);
 
-      // restore the view point (skip if preserveViewport is true)
-      if (!preserveViewport) {
+      // restore the view point
+      if (restoreViewport) {
         this.getJointGraphWrapper().restoreDefaultZoomAndOffset();
       }
     });

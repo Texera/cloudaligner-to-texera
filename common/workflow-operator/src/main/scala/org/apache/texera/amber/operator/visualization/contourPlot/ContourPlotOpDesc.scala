@@ -72,7 +72,6 @@ class ContourPlotOpDesc extends PythonOperatorDescriptor {
     val outputSchema = Schema()
       .add("html-content", AttributeType.STRING)
     Map(operatorInfo.outputPorts.head.id -> outputSchema)
-    Map(operatorInfo.outputPorts.head.id -> outputSchema)
   }
 
   override def operatorInfo: OperatorInfo =
@@ -97,7 +96,7 @@ class ContourPlotOpDesc extends PythonOperatorDescriptor {
        |        y = table[$y].values
        |        z = table[$z].values
        |        grid_size = int($gridSize)
-       |        connGaps = True if $connectGaps == 'true' else False
+       |        connGaps = True if '$connectGaps' == 'true' else False
        |
        |        grid_x, grid_y = np.meshgrid(np.linspace(min(x), max(x), grid_size), np.linspace(min(y), max(y), grid_size))
        |        grid_z = griddata((x, y), z, (grid_x, grid_y), method='cubic')
@@ -107,7 +106,7 @@ class ContourPlotOpDesc extends PythonOperatorDescriptor {
        |            y=np.linspace(min(y), max(y), grid_size),
        |            z=grid_z,
        |            connectgaps=connGaps,
-       |            contours_coloring =${coloringMethod.getColoringMethod},
+       |            contours_coloring ='${coloringMethod.getColoringMethod}',
        |            colorbar_title=$z
        |        ))
        |        fig.update_layout(title='Contour Plot')

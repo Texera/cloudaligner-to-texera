@@ -17,8 +17,9 @@
  * under the License.
  */
 
-import { DatePipe, Location } from "@angular/common";
+import { DatePipe, Location, NgIf, NgFor, NgTemplateOutlet } from "@angular/common";
 import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from "@angular/core";
+import { Router, RouterLink } from "@angular/router";
 import { UserService } from "../../../common/service/user/user.service";
 import {
   DEFAULT_WORKFLOW_NAME,
@@ -32,30 +33,47 @@ import { WorkflowActionService } from "../../service/workflow-graph/model/workfl
 import { ExecutionState } from "../../types/execute-workflow.interface";
 import { WorkflowWebsocketService } from "../../service/workflow-websocket/workflow-websocket.service";
 import { WorkflowResultExportService } from "../../service/workflow-result-export/workflow-result-export.service";
-import { catchError, debounceTime, filter, mergeMap, tap } from "rxjs/operators";
+import { catchError, debounceTime, filter, mergeMap, switchMap, tap } from "rxjs/operators";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { WorkflowUtilService } from "../../service/workflow-graph/util/workflow-util.service";
 import { WorkflowVersionService } from "../../../dashboard/service/user/workflow-version/workflow-version.service";
 import { UserProjectService } from "../../../dashboard/service/user/project/user-project.service";
-import { NzUploadFile } from "ng-zorro-antd/upload";
+import { NzUploadFile, NzUploadComponent } from "ng-zorro-antd/upload";
 import { saveAs } from "file-saver";
 import { NotificationService } from "src/app/common/service/notification/notification.service";
 import { OperatorMenuService } from "../../service/operator-menu/operator-menu.service";
 import { CoeditorPresenceService } from "../../service/workflow-graph/model/coeditor-presence.service";
-import { firstValueFrom, of, Subscription, timer } from "rxjs";
+import { EMPTY, firstValueFrom, of, timer } from "rxjs";
 import { isDefined } from "../../../common/util/predicate";
 import { NzModalService } from "ng-zorro-antd/modal";
 import { ResultExportationComponent } from "../result-exportation/result-exportation.component";
 import { ReportGenerationService } from "../../service/report-generation/report-generation.service";
 import { ShareAccessComponent } from "src/app/dashboard/component/user/share-access/share-access.component";
 import { PanelService } from "../../service/panel/panel.service";
-import { DASHBOARD_USER_WORKFLOW } from "../../../app-routing.constant";
+import { USER_WORKFLOW } from "../../../app-routing.constant";
 import { ComputingUnitStatusService } from "../../../common/service/computing-unit/computing-unit-status/computing-unit-status.service";
 import { ComputingUnitState } from "../../../common/type/computing-unit-connection.interface";
 import { ComputingUnitSelectionComponent } from "../power-button/computing-unit-selection.component";
 import { GuiConfigService } from "../../../common/service/gui-config.service";
 import { DashboardWorkflowComputingUnit } from "../../../common/type/workflow-computing-unit";
 import { Privilege } from "../../../dashboard/type/share-access.interface";
+import { MarkdownDescriptionComponent } from "../../../dashboard/component/user/markdown-description/markdown-description.component";
+import { NzSpaceCompactItemDirective, NzSpaceCompactComponent } from "ng-zorro-antd/space";
+import { NzButtonComponent } from "ng-zorro-antd/button";
+import { ɵNzTransitionPatchDirective } from "ng-zorro-antd/core/transition-patch";
+import { NzIconDirective } from "ng-zorro-antd/icon";
+import { NzAvatarComponent } from "ng-zorro-antd/avatar";
+import { FormsModule } from "@angular/forms";
+import { NzWaveDirective } from "ng-zorro-antd/core/wave";
+import { CoeditorUserIconComponent } from "./coeditor-user-icon/coeditor-user-icon.component";
+import { UserIconComponent } from "../../../dashboard/component/user/user-icon/user-icon.component";
+import { NzDropdownDirective, NzDropdownMenuComponent } from "ng-zorro-antd/dropdown";
+import { NzMenuDirective, NzMenuItemComponent } from "ng-zorro-antd/menu";
+import { NzCheckboxComponent } from "ng-zorro-antd/checkbox";
+import { NzPopoverDirective } from "ng-zorro-antd/popover";
+import { NzSwitchComponent } from "ng-zorro-antd/switch";
+import { NzBadgeComponent } from "ng-zorro-antd/badge";
+import { NzTooltipDirective } from "ng-zorro-antd/tooltip";
 
 /**
  * MenuComponent is the top level menu bar that shows
@@ -77,6 +95,34 @@ import { Privilege } from "../../../dashboard/type/share-access.interface";
   selector: "texera-menu",
   templateUrl: "menu.component.html",
   styleUrls: ["menu.component.scss"],
+  imports: [
+    NgIf,
+    NzSpaceCompactItemDirective,
+    NzButtonComponent,
+    ɵNzTransitionPatchDirective,
+    NzIconDirective,
+    NzAvatarComponent,
+    FormsModule,
+    NzWaveDirective,
+    NgFor,
+    CoeditorUserIconComponent,
+    UserIconComponent,
+    RouterLink,
+    NzUploadComponent,
+    NzDropdownDirective,
+    NzDropdownMenuComponent,
+    NzMenuDirective,
+    NzMenuItemComponent,
+    NzCheckboxComponent,
+    NgTemplateOutlet,
+    ComputingUnitSelectionComponent,
+    NzPopoverDirective,
+    NzSwitchComponent,
+    NzBadgeComponent,
+    NzTooltipDirective,
+    DatePipe,
+    NzSpaceCompactComponent,
+  ],
 })
 export class MenuComponent implements OnInit, OnDestroy {
   public executionState: ExecutionState; // set this to true when the workflow is started
@@ -91,7 +137,8 @@ export class MenuComponent implements OnInit, OnDestroy {
   public showRegion: boolean = false;
   public showGrid: boolean = false;
   public showNumWorkers: boolean = false;
-  protected readonly DASHBOARD_USER_WORKFLOW = DASHBOARD_USER_WORKFLOW;
+  public showStatus: boolean = false;
+  protected readonly USER_WORKFLOW = USER_WORKFLOW;
 
   @Input() public writeAccess: boolean = false;
   @Input() public pid?: number = undefined;
@@ -107,14 +154,12 @@ export class MenuComponent implements OnInit, OnDestroy {
   public runDisable = false;
 
   public executionDuration = 0;
-  private durationUpdateSubscription: Subscription = new Subscription();
 
   // flag to display a particular version in the current canvas
   public displayParticularWorkflowVersion: boolean = false;
   public onClickRunHandler: () => void;
 
   // Computing unit status variables
-  private computingUnitStatusSubscription: Subscription = new Subscription();
   public selectedComputingUnit: DashboardWorkflowComputingUnit | null = null;
   public computingUnitStatus: ComputingUnitState = ComputingUnitState.NoComputingUnit;
 
@@ -145,17 +190,14 @@ export class MenuComponent implements OnInit, OnDestroy {
   ) {
     workflowWebsocketService
       .subscribeToEvent("ExecutionDurationUpdateEvent")
-      .pipe(untilDestroyed(this))
-      .subscribe(event => {
-        this.executionDuration = event.duration;
-        this.durationUpdateSubscription.unsubscribe();
-        if (event.isRunning) {
-          this.durationUpdateSubscription = timer(1000, 1000)
-            .pipe(untilDestroyed(this))
-            .subscribe(() => {
-              this.executionDuration += 1000;
-            });
-        }
+      .pipe(
+        tap(event => (this.executionDuration = event.duration)),
+        // restart the 1s timer on each event, only while running
+        switchMap(event => (event.isRunning ? timer(1000, 1000) : EMPTY)),
+        untilDestroyed(this)
+      )
+      .subscribe(() => {
+        this.executionDuration += 1000;
       });
     this.executionState = executeWorkflowService.getExecutionState().state;
     // return the run button after the execution is finished, either
@@ -206,7 +248,6 @@ export class MenuComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.workflowResultExportService.resetFlags();
-    this.computingUnitStatusSubscription.unsubscribe();
   }
 
   private subscribeToComputingUnitSelection(): void {
@@ -223,15 +264,13 @@ export class MenuComponent implements OnInit, OnDestroy {
    */
   private subscribeToComputingUnitStatus(): void {
     // Subscribe to get the computing unit status
-    this.computingUnitStatusSubscription.add(
-      this.computingUnitStatusService
-        .getStatus()
-        .pipe(untilDestroyed(this))
-        .subscribe(status => {
-          this.computingUnitStatus = status;
-          this.applyRunButtonBehavior(this.getRunButtonBehavior());
-        })
-    );
+    this.computingUnitStatusService
+      .getStatus()
+      .pipe(untilDestroyed(this))
+      .subscribe(status => {
+        this.computingUnitStatus = status;
+        this.applyRunButtonBehavior(this.getRunButtonBehavior());
+      });
   }
 
   /**
@@ -261,6 +300,21 @@ export class MenuComponent implements OnInit, OnDestroy {
       .mainPaper.el.classList.toggle("hide-worker-count", !this.showNumWorkers);
   }
 
+  toggleStatus() {
+    this.workflowActionService
+      .getJointGraphWrapper()
+      .mainPaper.el.classList.toggle("hide-operator-status", !this.showStatus);
+    this.applyOperatorStatusPosition();
+  }
+
+  private applyOperatorStatusPosition(): void {
+    const refY = this.showNumWorkers ? -55 : -35;
+    const paperModel = this.workflowActionService.getJointGraphWrapper().mainPaper.model as any;
+    paperModel.getElements().forEach((el: any) => {
+      el.attr(".texera-operator-state/ref-x", -10);
+      el.attr(".texera-operator-state/ref-y", refY);
+    });
+  }
 
   public async onClickOpenShareAccess(): Promise<void> {
     this.modalService.create({
@@ -276,6 +330,12 @@ export class MenuComponent implements OnInit, OnDestroy {
       nzTitle: "Share this workflow with others",
       nzCentered: true,
       nzWidth: "800px",
+    });
+
+    modalRef.afterClose.pipe(untilDestroyed(this)).subscribe(result => {
+      if (result?.userRevokedOwnAccess) {
+        this.router.navigate([USER_WORKFLOW]);
+      }
     });
   }
 
@@ -472,14 +532,9 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
 
   public toggleRegion(): void {
-    // Update shared state so WorkflowEditorComponent can use it when creating region elements
-    this.workflowActionService.setShowRegion(this.showRegion);
-    // Apply visibility to any existing region elements
-    this.workflowActionService
-      .getJointGraphWrapper()
-      .jointGraph.getElements()
-      .filter(el => el.get("type") === "region")
-      .forEach(el => el.attr("body/visibility", this.showRegion ? "visible" : "hidden"));
+    // The editor owns applying this to the shared JointJS model (both canvas and mini-map) and
+    // reapplies it whenever regions are recreated during execution (see #5120, #4027).
+    this.workflowActionService.getJointGraphWrapper().setRegionsDisplayed(this.showRegion);
   }
 
   /**

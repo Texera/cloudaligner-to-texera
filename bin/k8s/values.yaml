@@ -393,8 +393,4 @@ envoy-gateway:
     envoyGateway:
       extensionApis:
         enableBackend: true
-<<<<<<< HEAD
         enableEnvoyPatchPolicy: true
-=======
-        enableEnvoyPatchPolicy: true
->>>>>>> 349a1aa18b4c3458c3f6a14b0ea834986fe69093

@@ -60,8 +60,17 @@ trait WorkerExecutionCompletedHandler {
     Future
       .collect(Seq(statsRequest))
       .flatMap(_ => {
-        // completion notification is handled by the scheduler when all regions finish
-        ()
+        // if entire workflow is completed, clean up
+        val isWorkflowTerminal =
+          cp.workflowExecution.isCompleted &&
+            !cp.workflowScheduler.hasPendingRegions &&
+            !cp.workflowExecutionCoordinator.hasUnfinishedRegionCoordinators
+        if (isWorkflowTerminal) {
+          // after query result come back: send completed event, cleanup ,and kill workflow
+          sendToClient(ExecutionStateUpdate(cp.workflowExecution.getState))
+          cp.controllerTimerService.disableStatusUpdate()
+          cp.controllerTimerService.disableRuntimeStatisticsCollection()
+        }
       })
     EmptyReturn()
   }

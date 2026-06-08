@@ -52,7 +52,6 @@ class ContinuousErrorBandsOpDesc extends PythonOperatorDescriptor {
     val outputSchema = Schema()
       .add("html-content", AttributeType.STRING)
     Map(operatorInfo.outputPorts.head.id -> outputSchema)
-    Map(operatorInfo.outputPorts.head.id -> outputSchema)
   }
 
   override def operatorInfo: OperatorInfo =
@@ -106,7 +105,7 @@ class ContinuousErrorBandsOpDesc extends PythonOperatorDescriptor {
         fig.add_trace(go.Scatter(
             x=table[${bandConf.xValue}],
             y=table[${bandConf.yValue}],
-            mode=${bandConf.mode.getModeInPlotly},
+            mode='${bandConf.mode.getModeInPlotly}',
             $colorPart
             $namePart
           ))"""

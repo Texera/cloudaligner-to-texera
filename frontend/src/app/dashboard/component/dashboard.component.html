@@ -66,7 +66,7 @@
             nz-tooltip="Look up the user projects"
             nzMatchRouter="true"
             nzTooltipPlacement="right"
-            [routerLink]="DASHBOARD_USER_PROJECT">
+            [routerLink]="USER_PROJECT">
             <span
               nz-icon
               nzType="container"></span>
@@ -79,7 +79,7 @@
             nz-tooltip="Open the saved workflows"
             nzMatchRouter="true"
             nzTooltipPlacement="right"
-            [routerLink]="DASHBOARD_USER_WORKFLOW">
+            [routerLink]="USER_WORKFLOW">
             <span
               nz-icon
               nzType="project"></span>
@@ -92,18 +92,19 @@
             nz-tooltip="Look up for datasets"
             nzMatchRouter="true"
             nzTooltipPlacement="right"
-            [routerLink]="DASHBOARD_USER_DATASET">
+            [routerLink]="USER_DATASET">
             <span
               nz-icon
               nzType="database"></span>
             <span>Datasets</span>
           </li>
           <li
+            *ngIf="sidebarTabs.compute_enabled"
             nz-menu-item
             nz-tooltip="Manage computing units"
             nzMatchRouter="true"
             nzTooltipPlacement="right"
-            [routerLink]="DASHBOARD_USER_COMPUTING_UNIT">
+            [routerLink]="USER_COMPUTING_UNIT">
             <span
               nz-icon
               nzType="deployment-unit"></span>
@@ -127,7 +128,7 @@
             nz-tooltip="Quota information"
             nzMatchRouter="true"
             nzTooltipPlacement="right"
-            [routerLink]="DASHBOARD_USER_QUOTA">
+            [routerLink]="USER_QUOTA">
             <span
               nz-icon
               nzType="dashboard"></span>
@@ -139,7 +140,7 @@
             nz-tooltip="Open the discussion forum"
             nzMatchRouter="true"
             nzTooltipPlacement="right"
-            [routerLink]="DASHBOARD_USER_DISCUSSION">
+            [routerLink]="USER_DISCUSSION">
             <span
               nz-icon
               nzType="comment"></span>
@@ -159,7 +160,7 @@
             nz-tooltip="Look up the users"
             nzMatchRouter="true"
             nzTooltipPlacement="right"
-            [routerLink]="DASHBOARD_ADMIN_USER">
+            [routerLink]="ADMIN_USER">
             <span
               nz-icon
               nzType="user"></span>
@@ -170,7 +171,7 @@
             nz-tooltip="View statistics"
             nzMatchRouter="true"
             nzTooltipPlacement="right"
-            [routerLink]="DASHBOARD_ADMIN_EXECUTION">
+            [routerLink]="ADMIN_EXECUTION">
             <span
               nz-icon
               nzType="setting"></span>
@@ -181,7 +182,7 @@
             nz-tooltip="Setup gmail"
             nzMatchRouter="true"
             nzTooltipPlacement="right"
-            [routerLink]="DASHBOARD_ADMIN_GMAIL">
+            [routerLink]="ADMIN_GMAIL">
             <span
               nz-icon
               nzType="mail"></span>
@@ -192,7 +193,7 @@
             nz-tooltip="Settings"
             nzMatchRouter="true"
             nzTooltipPlacement="right"
-            [routerLink]="DASHBOARD_ADMIN_SETTINGS">
+            [routerLink]="ADMIN_SETTINGS">
             <span
               nz-icon
               nzType="edit"></span>
@@ -206,7 +207,7 @@
         nz-menu-item
         nz-tooltip
         nzTooltipPlacement="right"
-        [routerLink]="DASHBOARD_ABOUT">
+        [routerLink]="ABOUT">
         <span
           nz-icon
           nzType="info-circle"></span>

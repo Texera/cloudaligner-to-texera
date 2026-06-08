@@ -60,8 +60,8 @@ class FilledAreaPlotOpDesc extends PythonOperatorDescriptor {
   @AutofillAttributeName
   var color: EncodableString = ""
 
-  @JsonProperty(required = true)
-  @JsonSchemaTitle("Split Plot by  Line Group")
+  @JsonProperty(required = true, defaultValue = "false")
+  @JsonSchemaTitle("Split Plot by Line Group")
   @JsonPropertyDescription("Do you want to split the graph")
   var facetColumn: Boolean = false
 
@@ -77,13 +77,12 @@ class FilledAreaPlotOpDesc extends PythonOperatorDescriptor {
     val outputSchema = Schema()
       .add("html-content", AttributeType.STRING)
     Map(operatorInfo.outputPorts.head.id -> outputSchema)
-    Map(operatorInfo.outputPorts.head.id -> outputSchema)
   }
 
   override def operatorInfo: OperatorInfo =
     OperatorInfo.forVisualization(
       "Filled Area Plot",
-      "Visualize data in filled area plot",
+      "Visualize data in a filled area plot",
       OperatorGroupConstants.VISUALIZATION_BASIC_GROUP
     )
 
