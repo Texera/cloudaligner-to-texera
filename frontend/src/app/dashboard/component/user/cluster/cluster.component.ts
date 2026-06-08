@@ -9,6 +9,7 @@ import { switchMap, distinctUntilChanged, map } from "rxjs/operators";
 
 @UntilDestroy()
 @Component({
+  standalone: false,
   selector: "texera-cluster",
   templateUrl: "./cluster.component.html",
   styleUrls: ["./cluster.component.scss"],

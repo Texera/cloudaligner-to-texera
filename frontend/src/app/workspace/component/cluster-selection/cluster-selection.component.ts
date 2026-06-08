@@ -5,6 +5,7 @@ import { Clusters } from "src/app/dashboard/type/clusters";
 
 @UntilDestroy()
 @Component({
+  standalone: false,
   selector: "texera-cluster-selection",
   templateUrl: "cluster-selection.component.html",
   styleUrls: ["cluster-selection.component.scss"],

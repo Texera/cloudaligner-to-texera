@@ -23,6 +23,7 @@ import { ChatAssistantWebsocketService } from "../../../service/chat-assistant-w
 
 @UntilDestroy()
 @Component({
+  standalone: false,
   selector: "texera-chat-assistant-non-streamed",
   templateUrl: "./chat-assistant-multi-agent.component.html",
   styleUrls: ["./chat-assistant-multi-agent.component.scss"],

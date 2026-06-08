@@ -10,6 +10,7 @@ import { DatasetService } from "../../../dashboard/service/user/dataset/dataset.
 
 @UntilDestroy()
 @Component({
+  standalone: false,
   selector: "texera-directory-path-input",
   templateUrl: "./directory-path-input.component.html",
   styleUrls: ["./directory-path-input.component.scss"],

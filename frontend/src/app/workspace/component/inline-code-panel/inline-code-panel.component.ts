@@ -31,7 +31,7 @@ import {
 } from "@angular/core";
 import { UntilDestroy } from "@ngneat/until-destroy";
 import { WorkflowActionService } from "../../service/workflow-graph/model/workflow-action.service";
-import { YText } from "yjs/dist/src/types/YText";
+import { Text as YText } from "yjs";
 import { YType } from "../../types/shared-editing.interface";
 import { OperatorPredicate } from "../../types/workflow-common.interface";
 
@@ -47,6 +47,7 @@ import { OperatorPredicate } from "../../types/workflow-common.interface";
  */
 @UntilDestroy()
 @Component({
+  standalone: false,
   selector: "texera-inline-code-panel",
   templateUrl: "./inline-code-panel.component.html",
   styleUrls: ["./inline-code-panel.component.scss"],

@@ -217,7 +217,7 @@ object CacheReusePreSchedulingStep {
       .flatMap { pid =>
         cachedOutputsByPort.get(pid).map { cached =>
           pid -> OutputPortConfig(
-            storageURI = cached.resultUri,
+            storageURIBase = cached.resultUri,
             cachedTupleCount = cached.tupleCount,
             materialize = false
           )
@@ -268,7 +268,7 @@ object CacheReusePreSchedulingStep {
         .flatMap { outputPort =>
           cachedOutputsByPort.get(outputPort).map { cached =>
             outputPort -> OutputPortConfig(
-              storageURI = cached.resultUri,
+              storageURIBase = cached.resultUri,
               cachedTupleCount = cached.tupleCount,
               materialize = false
             )

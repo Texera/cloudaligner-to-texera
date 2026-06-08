@@ -8,6 +8,7 @@ import { DatasetService } from "../../../dashboard/service/user/dataset/dataset.
 
 @UntilDestroy()
 @Component({
+  standalone: false,
   selector: "texera-directory-selection-modal",
   templateUrl: "directory-selection.component.html",
   styleUrls: ["directory-selection.component.scss"],

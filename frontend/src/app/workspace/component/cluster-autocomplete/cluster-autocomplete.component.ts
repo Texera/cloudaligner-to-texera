@@ -8,6 +8,7 @@ import { environment } from "src/environments/environment";
 
 @UntilDestroy()
 @Component({
+  standalone: false,
   selector: "texera-cluster-autocomplete-template",
   templateUrl: "./cluster-autocomplete.component.html",
   styleUrls: ["cluster-autocomplete.component.scss"],

@@ -36,6 +36,7 @@ import {
  */
 @UntilDestroy()
 @Component({
+  standalone: false,
   selector: "texera-cache-panel",
   templateUrl: "cache-panel.component.html",
   styleUrls: ["cache-panel.component.scss"],

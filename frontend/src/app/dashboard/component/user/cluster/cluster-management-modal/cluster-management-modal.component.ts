@@ -2,6 +2,7 @@ import { Component, Input, Output, EventEmitter } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 
 @Component({
+  standalone: false,
   selector: "app-cluster-management-modal",
   templateUrl: "./cluster-management-modal.component.html",
   styleUrls: ["./cluster-management-modal.component.scss"],

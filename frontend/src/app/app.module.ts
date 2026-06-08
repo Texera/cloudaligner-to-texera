@@ -199,7 +199,6 @@ import { ClusterSelectionComponent } from "./workspace/component/cluster-selecti
 import { ClusterAutoCompleteComponent } from "./workspace/component/cluster-autocomplete/cluster-autocomplete.component";
 import { DirectoryPathInputComponent } from "./workspace/component/directory-path-input/directory-path-input.component";
 import { DirectorySelectionComponent } from "./workspace/component/directory-selection/directory-selection.component";
-import { FileSelectionComponent } from "./workspace/component/file-selection/file-selection.component";
 import { InlineCodePanelComponent } from "./workspace/component/inline-code-panel/inline-code-panel.component";
 import { CachePanelComponent } from "./workspace/component/left-panel/cache-panel/cache-panel.component";
 import { ChatAssistantMultiAgentComponent } from "./workspace/component/left-panel/chat-assistant-multi-agent/chat-assistant-multi-agent.component";
@@ -215,7 +214,7 @@ registerLocaleData(en);
     ClusterAutoCompleteComponent,
     DirectoryPathInputComponent,
     DirectorySelectionComponent,
-    FileSelectionComponent,
+    DashboardComponent,
     InlineCodePanelComponent,
     CachePanelComponent,
     ChatAssistantMultiAgentComponent,
@@ -304,7 +303,6 @@ registerLocaleData(en);
     ResultPanelComponent,
     ResultExportationComponent,
     OperatorLabelComponent,
-    DashboardComponent,
     AdminUserComponent,
     AdminExecutionComponent,
     UserIconComponent,
